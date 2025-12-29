@@ -11,8 +11,11 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 				<ee:message >
 					<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
+// 1. Import your function
+import modules::ErrorFunction
 ---
-{ "message": "Bad Request" }]]></ee:set-payload>
+// 2. Call the function
+ErrorFunction::buildError(error.errorType.identifier, error.description)]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
 		</on-error-propagate>
@@ -22,8 +25,11 @@ output application/json
 				<ee:message >
 					<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
+// 1. Import your function
+import modules::ErrorFunction
 ---
-{ "message": "Not Found" }]]></ee:set-payload>
+// 2. Call the function
+ErrorFunction::buildError(error.errorType.identifier, error.description)]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
 		</on-error-propagate>

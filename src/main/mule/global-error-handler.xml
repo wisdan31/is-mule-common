@@ -4,37 +4,62 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<error-handler name="global-error-handler" doc:id="a9bb319e-4ac1-437a-8af6-9d4fcb4d51c4" >
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2e958960-0e22-4fd2-9e7f-8f33ae01d4d2" type="APIKIT:BAD_REQUEST" >
-			<set-variable value="400" doc:name="httpStatus" doc:id="503d6d4c-a305-4474-adfa-7fcb53327302" variableName="httpStatus" />
-			<ee:transform doc:name="Transform Message" doc:id="dccb28ef-57f6-4006-87f7-7831592a689f" >
+	<sub-flow name="responseProcessingSubFlow" doc:id="0b573e2c-89a2-45f8-8414-01aabdd8ce4c" >
+		<choice doc:name="Choice" doc:id="2ba2b8c5-4831-42c2-a748-56fd7c9462e0" >
+			<when expression="#[attributes.statusCode &lt; 400]" >
+				<ee:transform doc:name="response" doc:id="5c6bf630-8d09-4eb0-bfe5-51a2d1653ee7" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<set-variable value="#[attributes.statusCode]" doc:name="httpStatus" doc:id="92b47c5d-52c0-427c-9f51-46196d1b0296" variableName="httpStatus" />
+				<ee:transform doc:name="error" doc:id="e48617b4-cf0a-40bd-95cc-70a6106d8f7d" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+readUrl("classpath://modules/error-response.dwl", "application/dw")]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<error-handler name="global_error_handler" doc:id="d0fd1931-8a1e-446e-901d-c62f94ad19cf" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="765baadf-921f-4f8d-9b6c-53ac6dd039b6" type="APIKIT:BAD_REQUEST">
+			<ee:transform doc:name="Transform Message" doc:id="b0bb849b-650c-4300-96fb-c3b881025e61" >
 				<ee:message >
 					<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
-// 1. Import your function
-import modules::ErrorFunction
 ---
-// 2. Call the function
-ErrorFunction::buildError(error.errorType.identifier, error.description)]]></ee:set-payload>
+{
+    error: {
+        "errorType": "APIKIT:BAD_REQUEST",
+        "errorMessage": error.description default "Bad Request",
+        "timestamp": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss"}
+    }
+}]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
 		</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate1" doc:id="d7ee4062-1b24-4dbe-8874-fe16a01a7c39" type="APIKIT:NOT_FOUND" >
-			<set-variable value="404" doc:name="httpStatus" doc:id="e4aa2c6d-6931-4468-9140-970ab79eb84c" variableName="httpStatus" />
-			<ee:transform doc:name="Transform Message" doc:id="0afc52e1-564a-4f8d-9882-6b73f51a644a" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="af6b9ccf-4dca-4192-a3ca-be4a3825ee4c" type="ANY">
+			<ee:transform doc:name="Transform Message" doc:id="4c97ff37-c571-45c8-afa7-e555c0aa2194" >
 				<ee:message >
 					<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
-// 1. Import your function
-import modules::ErrorFunction
 ---
-// 2. Call the function
-ErrorFunction::buildError(error.errorType.identifier, error.description)]]></ee:set-payload>
+{
+    error: {
+        "errorMessage": error.description default "Error",
+        "timestamp": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss"}
+    }
+}]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
-		</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate2" doc:id="07c602b7-4ea3-41d0-bfa9-e4efc0fed2dc" type="ANY" >
-			<set-variable value="500" doc:name="httpStatus" doc:id="be624203-bbea-4132-80eb-94f512ffb663" variableName="httpStatus" />
 		</on-error-propagate>
 	</error-handler>
 </mule>

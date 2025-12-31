@@ -31,25 +31,43 @@ readUrl("classpath://modules/error-response.dwl", "application/dw")]]></ee:set-p
 	</sub-flow>
 	<error-handler name="global_error_handler" doc:id="d0fd1931-8a1e-446e-901d-c62f94ad19cf" >
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="765baadf-921f-4f8d-9b6c-53ac6dd039b6" type="APIKIT:BAD_REQUEST">
+			<set-variable value="400" doc:name="httpStatus" doc:id="bd2d8fc2-51ec-4b9b-aec8-e83ecb56c3d9" variableName="httpStatus"/>
 			<ee:transform doc:name="Transform Message" doc:id="b0bb849b-650c-4300-96fb-c3b881025e61" >
 				<ee:message >
 					<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
+// Import your new module
+import modules::ErrorUtils
 ---
-{
-    error: {
-        "errorType": "APIKIT:BAD_REQUEST",
-        "errorMessage": error.description default "Bad Request",
-        "timestamp": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss"}
-    }
-}]]></ee:set-payload>
+// Call the function using 'default' to prevent Null crashes
+ErrorUtils::getErrorStructure(
+    error, 
+    (error.errorType.namespace default "MULE") ++ ":" ++ (error.errorType.identifier default "UNKNOWN")
+)]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="36cd5e0a-29f9-40ac-9fac-86f1b8357b36" type="APIKIT:NOT_FOUND">
+			<set-variable value="404" doc:name="httpStatus" doc:id="6180ce90-1993-4898-b0ca-d89f8297a502" variableName="httpStatus" />
+			<ee:transform doc:name="Transform Message" doc:id="805b61af-be5c-4df6-99ef-56863f9b0a3e" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+// Import your new module
+import modules::ErrorUtils
+---
+// Call the function using 'default' to prevent Null crashes
+ErrorUtils::getErrorStructure(
+    error, 
+    (error.errorType.namespace default "MULE") ++ ":" ++ (error.errorType.identifier default "UNKNOWN")
+)]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="af6b9ccf-4dca-4192-a3ca-be4a3825ee4c" type="ANY">
-			<ee:transform doc:name="Transform Message" doc:id="4c97ff37-c571-45c8-afa7-e555c0aa2194" >
-				<ee:message >
-					<ee:set-payload ><![CDATA[%dw 2.0
+			<ee:transform doc:name="Transform Message" doc:id="4c97ff37-c571-45c8-afa7-e555c0aa2194">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {

@@ -5,25 +5,26 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<sub-flow name="responseProcessingSubFlow" doc:id="0b573e2c-89a2-45f8-8414-01aabdd8ce4c" >
+		<set-variable value="#[attributes.statusCode]" doc:name="httpStatus" doc:id="92b47c5d-52c0-427c-9f51-46196d1b0296" variableName="httpStatus" />
 		<choice doc:name="Choice" doc:id="2ba2b8c5-4831-42c2-a748-56fd7c9462e0" >
-			<when expression="#[attributes.statusCode &lt; 400]" >
-				<ee:transform doc:name="response" doc:id="5c6bf630-8d09-4eb0-bfe5-51a2d1653ee7" >
-					<ee:message >
-						<ee:set-payload ><![CDATA[%dw 2.0
+			<when expression="#[vars.httpStatus &gt; 399 and payload.error == null]">
+				<ee:transform doc:name="error" doc:id="e48617b4-cf0a-40bd-95cc-70a6106d8f7d">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
+import modules::ErrorUtils
 ---
-payload]]></ee:set-payload>
+ErrorUtils::getStructureFromPayload(payload, vars.httpStatus)]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
 			</when>
 			<otherwise >
-				<set-variable value="#[attributes.statusCode]" doc:name="httpStatus" doc:id="92b47c5d-52c0-427c-9f51-46196d1b0296" variableName="httpStatus" />
-				<ee:transform doc:name="error" doc:id="e48617b4-cf0a-40bd-95cc-70a6106d8f7d" >
-					<ee:message >
-						<ee:set-payload ><![CDATA[%dw 2.0
+				<ee:transform doc:name="response" doc:id="5c6bf630-8d09-4eb0-bfe5-51a2d1653ee7">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
-readUrl("classpath://modules/error-response.dwl", "application/dw")]]></ee:set-payload>
+payload]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
 			</otherwise>

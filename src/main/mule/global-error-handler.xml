@@ -37,14 +37,12 @@ payload]]></ee:set-payload>
 				<ee:message >
 					<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
-// Import your new module
 import modules::ErrorUtils
 ---
-// Call the function using 'default' to prevent Null crashes
-ErrorUtils::getErrorStructure(
-    error, 
-    (error.errorType.namespace default "MULE") ++ ":" ++ (error.errorType.identifier default "UNKNOWN")
-)]]></ee:set-payload>
+if (error.errorMessage.payload != null)
+    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
+else
+    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
 		</on-error-propagate>
@@ -54,29 +52,87 @@ ErrorUtils::getErrorStructure(
 				<ee:message >
 					<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
-// Import your new module
 import modules::ErrorUtils
 ---
-// Call the function using 'default' to prevent Null crashes
-ErrorUtils::getErrorStructure(
-    error, 
-    (error.errorType.namespace default "MULE") ++ ":" ++ (error.errorType.identifier default "UNKNOWN")
-)]]></ee:set-payload>
+if (error.errorMessage.payload != null)
+    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
+else
+    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a370a0e8-56b6-4d4d-8a4e-ce93a8ab76bf" type="APIKIT:METHOD_NOT_ALLOWED" >
+			<set-variable value="405" doc:name="httpStatus" doc:id="4a21fc3d-1026-4466-9a04-5f809ea36941" variableName="httpStatus" />
+			<ee:transform doc:name="Transform Message" doc:id="a139f112-3ecc-49a9-88a6-dc23e1ba8f17" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+import modules::ErrorUtils
+---
+if (error.errorMessage.payload != null)
+    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
+else
+    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3eabfa66-df01-41d2-bcbc-7dacc648ada7" type="APIKIT:NOT_ACCEPTABLE">
+			<set-variable value="406" doc:name="httpStatus" doc:id="2a12715c-12fb-4754-966a-2e4124c8755a" variableName="httpStatus" />
+			<ee:transform doc:name="Transform Message" doc:id="f2d21598-4fd3-4777-b785-4f836625a76b" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+import modules::ErrorUtils
+---
+if (error.errorMessage.payload != null)
+    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
+else
+    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="07f66552-254b-44f7-9262-bad55b8656bd" type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+			<set-variable value="415" doc:name="httpStatus" doc:id="63b140cd-7a4e-4a2d-a158-c44dae34debd" variableName="httpStatus" />
+			<ee:transform doc:name="Transform Message" doc:id="029fa2ab-baa6-4b73-840a-54c544c148d6" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+import modules::ErrorUtils
+---
+if (error.errorMessage.payload != null)
+    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
+else
+    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="eb3d9a19-4a89-4956-a1a9-cc5e450537d1" type="APIKIT:NOT_IMPLEMENTED">
+			<set-variable value="501" doc:name="httpStatus" doc:id="ab8b15c3-2863-4470-b6d7-23a5c889416b" variableName="httpStatus" />
+			<ee:transform doc:name="Transform Message" doc:id="0a06e13f-a370-41e2-a0d6-e0386a0c8493" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+import modules::ErrorUtils
+---
+if (error.errorMessage.payload != null)
+    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
+else
+    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="af6b9ccf-4dca-4192-a3ca-be4a3825ee4c" type="ANY">
+			<set-variable value="400" doc:name="httpStatus" doc:id="ede57793-3040-46dd-a9fd-b01b27ed7a20" variableName="httpStatus" />
 			<ee:transform doc:name="Transform Message" doc:id="4c97ff37-c571-45c8-afa7-e555c0aa2194">
 				<ee:message>
 					<ee:set-payload><![CDATA[%dw 2.0
 output application/json
+import modules::ErrorUtils
 ---
-{
-    error: {
-        "errorMessage": error.description default "Error",
-        "timestamp": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss"}
-    }
-}]]></ee:set-payload>
+if (error.errorMessage.payload != null)
+    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
+else
+    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
 		</on-error-propagate>

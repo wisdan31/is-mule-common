@@ -30,111 +30,48 @@ payload]]></ee:set-payload>
 			</otherwise>
 		</choice>
 	</sub-flow>
+	<sub-flow name="createErrorSubFlow" doc:id="68288932-387d-4a78-9ad5-0741345d18e5" >
+		<ee:transform doc:name="Transform Message" doc:id="9fa31268-237c-44a8-a2c8-84c9e0d8934f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+import modules::ErrorUtils
+---
+if (error.errorMessage.payload != null)
+    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
+else
+    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
 	<error-handler name="global_error_handler" doc:id="d0fd1931-8a1e-446e-901d-c62f94ad19cf" >
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="765baadf-921f-4f8d-9b6c-53ac6dd039b6" type="APIKIT:BAD_REQUEST">
 			<set-variable value="400" doc:name="httpStatus" doc:id="bd2d8fc2-51ec-4b9b-aec8-e83ecb56c3d9" variableName="httpStatus"/>
-			<ee:transform doc:name="Transform Message" doc:id="b0bb849b-650c-4300-96fb-c3b881025e61" >
-				<ee:message >
-					<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-import modules::ErrorUtils
----
-if (error.errorMessage.payload != null)
-    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
-else
-    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
-				</ee:message>
-			</ee:transform>
+			<flow-ref doc:name="createErrorSubFlow" doc:id="6d5587ec-6781-4d3e-8c11-7783f6add91c" name="createErrorSubFlow"/>
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="36cd5e0a-29f9-40ac-9fac-86f1b8357b36" type="APIKIT:NOT_FOUND">
 			<set-variable value="404" doc:name="httpStatus" doc:id="6180ce90-1993-4898-b0ca-d89f8297a502" variableName="httpStatus" />
-			<ee:transform doc:name="Transform Message" doc:id="805b61af-be5c-4df6-99ef-56863f9b0a3e" >
-				<ee:message >
-					<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-import modules::ErrorUtils
----
-if (error.errorMessage.payload != null)
-    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
-else
-    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
-				</ee:message>
-			</ee:transform>
+			<flow-ref doc:name="createErrorSubFlow" doc:id="16f1792a-2089-466e-8fe2-8e080a9d8d25" name="createErrorSubFlow" />
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a370a0e8-56b6-4d4d-8a4e-ce93a8ab76bf" type="APIKIT:METHOD_NOT_ALLOWED" >
 			<set-variable value="405" doc:name="httpStatus" doc:id="4a21fc3d-1026-4466-9a04-5f809ea36941" variableName="httpStatus" />
-			<ee:transform doc:name="Transform Message" doc:id="a139f112-3ecc-49a9-88a6-dc23e1ba8f17" >
-				<ee:message >
-					<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-import modules::ErrorUtils
----
-if (error.errorMessage.payload != null)
-    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
-else
-    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
-				</ee:message>
-			</ee:transform>
+			<flow-ref doc:name="createErrorSubFlow" doc:id="c5e61438-d3a4-4b8e-a516-0fea5ffb1581" name="createErrorSubFlow" />
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3eabfa66-df01-41d2-bcbc-7dacc648ada7" type="APIKIT:NOT_ACCEPTABLE">
 			<set-variable value="406" doc:name="httpStatus" doc:id="2a12715c-12fb-4754-966a-2e4124c8755a" variableName="httpStatus" />
-			<ee:transform doc:name="Transform Message" doc:id="f2d21598-4fd3-4777-b785-4f836625a76b" >
-				<ee:message >
-					<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-import modules::ErrorUtils
----
-if (error.errorMessage.payload != null)
-    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
-else
-    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
-				</ee:message>
-			</ee:transform>
+			<flow-ref doc:name="createErrorSubFlow" doc:id="94cda8be-5b04-4518-b56f-c4c0cee85791" name="createErrorSubFlow" />
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="07f66552-254b-44f7-9262-bad55b8656bd" type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
 			<set-variable value="415" doc:name="httpStatus" doc:id="63b140cd-7a4e-4a2d-a158-c44dae34debd" variableName="httpStatus" />
-			<ee:transform doc:name="Transform Message" doc:id="029fa2ab-baa6-4b73-840a-54c544c148d6" >
-				<ee:message >
-					<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-import modules::ErrorUtils
----
-if (error.errorMessage.payload != null)
-    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
-else
-    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
-				</ee:message>
-			</ee:transform>
+			<flow-ref doc:name="createErrorSubFlow" doc:id="bac50d91-222d-4ebf-9dc1-fa1d79f6edfa" name="createErrorSubFlow" />
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="eb3d9a19-4a89-4956-a1a9-cc5e450537d1" type="APIKIT:NOT_IMPLEMENTED">
 			<set-variable value="501" doc:name="httpStatus" doc:id="ab8b15c3-2863-4470-b6d7-23a5c889416b" variableName="httpStatus" />
-			<ee:transform doc:name="Transform Message" doc:id="0a06e13f-a370-41e2-a0d6-e0386a0c8493" >
-				<ee:message >
-					<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
-import modules::ErrorUtils
----
-if (error.errorMessage.payload != null)
-    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
-else
-    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
-				</ee:message>
-			</ee:transform>
+			<flow-ref doc:name="createErrorSubFlow" doc:id="a6243d1d-8349-4e05-a4fb-ee40618b6700" name="createErrorSubFlow" />
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="af6b9ccf-4dca-4192-a3ca-be4a3825ee4c" type="ANY">
-			<set-variable value="400" doc:name="httpStatus" doc:id="ede57793-3040-46dd-a9fd-b01b27ed7a20" variableName="httpStatus" />
-			<ee:transform doc:name="Transform Message" doc:id="4c97ff37-c571-45c8-afa7-e555c0aa2194">
-				<ee:message>
-					<ee:set-payload><![CDATA[%dw 2.0
-output application/json
-import modules::ErrorUtils
----
-if (error.errorMessage.payload != null)
-    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
-else
-    ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
-				</ee:message>
-			</ee:transform>
+			<set-variable value="500" doc:name="httpStatus" doc:id="ede57793-3040-46dd-a9fd-b01b27ed7a20" variableName="httpStatus" />
+			<flow-ref doc:name="createErrorSubFlow" doc:id="d49a638f-2ebf-4541-a121-219e1c193147" name="createErrorSubFlow" />
 		</on-error-propagate>
 	</error-handler>
 </mule>

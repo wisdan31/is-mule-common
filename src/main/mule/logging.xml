@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="logInitialRequest" doc:id="d2207884-e944-42b0-a232-29ca47ea4a9e" >
+		<set-variable value="#[{&#10;   correlationId: correlationId,&#10;   processingApi: p('api.name'),&#10;   requestedURI: attributes.requestUri,&#10;   method: attributes.method,&#10;   processingStage: 'IN_PROGRESS'&#10;}]" doc:name="initialRequest" doc:id="94dbf79c-b053-4a25-bdec-e0cec77d69a9" variableName="initialRequest"/>
+		<logger level="INFO" doc:name="Logger" doc:id="77009edb-0941-48fb-a28b-e5e3a0a1cd03" message="#[vars.initialRequest]"/>
+	</sub-flow>
+	<sub-flow name="logAudit" doc:id="51d576a4-9e5c-48dc-bf62-8ff6c2454a1b" >
+		<ee:transform doc:name="Transform Message" doc:id="3d7acb57-406e-42b2-887c-eb1d995256a6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.initialRequest ++ (vars.logMessage default {})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5162da9e-df6b-4511-8937-32d6933beb19" message="#[payload]"/>
+	</sub-flow>
+	<sub-flow name="logFinalResponse" doc:id="7fddf60f-e181-4673-a01f-0f1573de4173" >
+		<ee:transform doc:name="Transform Message" doc:id="8c596973-5236-4412-b494-14a74d8a93b3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="initialRequest" ><![CDATA[%dw 2.0
+output application/java
+---
+vars.initialRequest ++ { processingStage: "COMPLETED" }]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="logAudit" doc:id="4837832a-d605-4e28-b278-0a009137a03b" name="logAudit"/>
+	</sub-flow>
+	<sub-flow name="logError" doc:id="8949f314-ad85-4139-b56b-2c1ebde22643" >
+		<ee:transform doc:name="Transform Message" doc:id="9efdca5b-a725-43ec-a436-7a52fb26b8ed" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.initialRequest ++ {
+    processingStage: "ERROR",
+    errorType: error.errorType.identifier,
+    errorMessage: error.description,
+    timestamp: now()
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="ERROR" doc:name="Logger" doc:id="41625851-bd0a-4fa4-ac4c-14c68682dbc1" message="#[payload]"/>
+	</sub-flow>
+</mule>

@@ -48,30 +48,37 @@ else
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="765baadf-921f-4f8d-9b6c-53ac6dd039b6" type="APIKIT:BAD_REQUEST">
 			<set-variable value="400" doc:name="httpStatus" doc:id="bd2d8fc2-51ec-4b9b-aec8-e83ecb56c3d9" variableName="httpStatus"/>
 			<flow-ref doc:name="createErrorSubFlow" doc:id="6d5587ec-6781-4d3e-8c11-7783f6add91c" name="createErrorSubFlow"/>
+			<flow-ref doc:name="logError" doc:id="312c9084-cee6-4cf4-a5d5-e4a9b70b8d90" name="logError"/>
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="36cd5e0a-29f9-40ac-9fac-86f1b8357b36" type="APIKIT:NOT_FOUND">
 			<set-variable value="404" doc:name="httpStatus" doc:id="6180ce90-1993-4898-b0ca-d89f8297a502" variableName="httpStatus" />
 			<flow-ref doc:name="createErrorSubFlow" doc:id="16f1792a-2089-466e-8fe2-8e080a9d8d25" name="createErrorSubFlow" />
+			<flow-ref doc:name="logError" doc:id="d8da1e8a-4003-403a-9684-5b8392fba494" name="logError" />
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a370a0e8-56b6-4d4d-8a4e-ce93a8ab76bf" type="APIKIT:METHOD_NOT_ALLOWED" >
 			<set-variable value="405" doc:name="httpStatus" doc:id="4a21fc3d-1026-4466-9a04-5f809ea36941" variableName="httpStatus" />
 			<flow-ref doc:name="createErrorSubFlow" doc:id="c5e61438-d3a4-4b8e-a516-0fea5ffb1581" name="createErrorSubFlow" />
+			<flow-ref doc:name="logError" doc:id="773157cd-e3b0-4b13-9052-d0ba9c42a548" name="logError" />
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3eabfa66-df01-41d2-bcbc-7dacc648ada7" type="APIKIT:NOT_ACCEPTABLE">
 			<set-variable value="406" doc:name="httpStatus" doc:id="2a12715c-12fb-4754-966a-2e4124c8755a" variableName="httpStatus" />
 			<flow-ref doc:name="createErrorSubFlow" doc:id="94cda8be-5b04-4518-b56f-c4c0cee85791" name="createErrorSubFlow" />
+			<flow-ref doc:name="logError" doc:id="cd085b22-2021-44cf-b84d-cd727b633fa5" name="logError" />
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="07f66552-254b-44f7-9262-bad55b8656bd" type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
 			<set-variable value="415" doc:name="httpStatus" doc:id="63b140cd-7a4e-4a2d-a158-c44dae34debd" variableName="httpStatus" />
 			<flow-ref doc:name="createErrorSubFlow" doc:id="bac50d91-222d-4ebf-9dc1-fa1d79f6edfa" name="createErrorSubFlow" />
+			<flow-ref doc:name="logError" doc:id="6346b2d9-03be-44dd-8518-290544be7177" name="logError" />
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="eb3d9a19-4a89-4956-a1a9-cc5e450537d1" type="APIKIT:NOT_IMPLEMENTED">
 			<set-variable value="501" doc:name="httpStatus" doc:id="ab8b15c3-2863-4470-b6d7-23a5c889416b" variableName="httpStatus" />
 			<flow-ref doc:name="createErrorSubFlow" doc:id="a6243d1d-8349-4e05-a4fb-ee40618b6700" name="createErrorSubFlow" />
+			<flow-ref doc:name="logError" doc:id="e26e145a-a7a5-4e59-89d7-424c6f43c59d" name="logError" />
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="af6b9ccf-4dca-4192-a3ca-be4a3825ee4c" type="ANY">
 			<set-variable value="500" doc:name="httpStatus" doc:id="ede57793-3040-46dd-a9fd-b01b27ed7a20" variableName="httpStatus" />
 			<flow-ref doc:name="createErrorSubFlow" doc:id="d49a638f-2ebf-4541-a121-219e1c193147" name="createErrorSubFlow" />
+			<flow-ref doc:name="logError" doc:id="7f54c55b-2c7a-4cb4-b861-0084ab0dec28" name="logError" />
 		</on-error-propagate>
 	</error-handler>
 </mule>

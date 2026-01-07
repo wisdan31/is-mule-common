@@ -11,22 +11,19 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<sub-flow name="logAudit" doc:id="51d576a4-9e5c-48dc-bf62-8ff6c2454a1b" >
 		<ee:transform doc:name="Transform Message" doc:id="3d7acb57-406e-42b2-887c-eb1d995256a6" >
 			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="logOutput" ><![CDATA[%dw 2.0
 output application/json
 ---
-vars.initialRequest ++ (vars.logMessage default {})]]></ee:set-payload>
-			</ee:message>
+vars.initialRequest ++ (vars.logMessage default {})]]></ee:set-variable>
+			</ee:variables>
 		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="5162da9e-df6b-4511-8937-32d6933beb19" message="#[payload]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="5162da9e-df6b-4511-8937-32d6933beb19" message="#[vars.logOutput]"/>
 	</sub-flow>
 	<sub-flow name="logFinalResponse" doc:id="7fddf60f-e181-4673-a01f-0f1573de4173" >
 		<ee:transform doc:name="Transform Message" doc:id="8c596973-5236-4412-b494-14a74d8a93b3" >
 			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
----
-{
-}]]></ee:set-payload>
 			</ee:message>
 			<ee:variables >
 				<ee:set-variable variableName="initialRequest" ><![CDATA[%dw 2.0
@@ -40,7 +37,9 @@ vars.initialRequest ++ { processingStage: "COMPLETED" }]]></ee:set-variable>
 	<sub-flow name="logError" doc:id="8949f314-ad85-4139-b56b-2c1ebde22643" >
 		<ee:transform doc:name="Transform Message" doc:id="9efdca5b-a725-43ec-a436-7a52fb26b8ed" >
 			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="logOutput" ><![CDATA[%dw 2.0
 output application/json
 ---
 vars.initialRequest ++ {
@@ -48,9 +47,9 @@ vars.initialRequest ++ {
     errorType: error.errorType.identifier,
     errorMessage: error.description,
     timestamp: now()
-}]]></ee:set-payload>
-			</ee:message>
+}]]></ee:set-variable>
+			</ee:variables>
 		</ee:transform>
-		<logger level="ERROR" doc:name="Logger" doc:id="41625851-bd0a-4fa4-ac4c-14c68682dbc1" message="#[payload]"/>
+		<logger level="ERROR" doc:name="Logger" doc:id="41625851-bd0a-4fa4-ac4c-14c68682dbc1" message="#[vars.logOutput]"/>
 	</sub-flow>
 </mule>

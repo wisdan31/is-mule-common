@@ -35,21 +35,23 @@ vars.initialRequest ++ { processingStage: "COMPLETED" }]]></ee:set-variable>
 		<flow-ref doc:name="logAudit" doc:id="4837832a-d605-4e28-b278-0a009137a03b" name="logAudit"/>
 	</sub-flow>
 	<sub-flow name="logError" doc:id="8949f314-ad85-4139-b56b-2c1ebde22643" >
-		<ee:transform doc:name="Transform Message" doc:id="9efdca5b-a725-43ec-a436-7a52fb26b8ed" >
-			<ee:message >
+		<ee:transform doc:name="Transform Message" doc:id="9efdca5b-a725-43ec-a436-7a52fb26b8ed">
+			<ee:message>
 			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="logOutput" ><![CDATA[%dw 2.0
+			<ee:variables>
+				<ee:set-variable variableName="logOutput"><![CDATA[%dw 2.0
 output application/json
+var failingComp = error.failingComponent default "Unknown"
 ---
 vars.initialRequest ++ {
-    processingStage: "ERROR",
-    errorType: error.errorType.identifier,
+    errorType: (error.errorType.namespace default "UNKNOWN") ++ ":" ++ (error.errorType.identifier default "UNKNOWN"),       
     errorMessage: error.description,
+    flow: (failingComp splitBy "/")[0] default "Unknown",                           
+    failingComponent: failingComp,
     timestamp: now()
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
-		<logger level="ERROR" doc:name="Logger" doc:id="41625851-bd0a-4fa4-ac4c-14c68682dbc1" message="#[vars.logOutput]"/>
+		<logger level="ERROR" doc:name="Logger" doc:id="41625851-bd0a-4fa4-ac4c-14c68682dbc1" message="#[vars.logOutput]" />
 	</sub-flow>
 </mule>

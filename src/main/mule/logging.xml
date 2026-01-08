@@ -6,7 +6,7 @@
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<sub-flow name="logInitialRequest" doc:id="d2207884-e944-42b0-a232-29ca47ea4a9e" >
 		<set-variable value="#[{&#10;   correlationId: correlationId,&#10;   processingApi: p('api.name'),&#10;   requestedURI: attributes.requestUri,&#10;   method: attributes.method,&#10;   processingStage: 'IN_PROGRESS'&#10;}]" doc:name="initialRequest" doc:id="94dbf79c-b053-4a25-bdec-e0cec77d69a9" variableName="initialRequest"/>
-		<logger level="INFO" doc:name="Logger" doc:id="77009edb-0941-48fb-a28b-e5e3a0a1cd03" message="#[vars.initialRequest]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="77009edb-0941-48fb-a28b-e5e3a0a1cd03" message='#[output application/json --- vars.initialRequest]'/>
 	</sub-flow>
 	<sub-flow name="logAudit" doc:id="51d576a4-9e5c-48dc-bf62-8ff6c2454a1b" >
 		<ee:transform doc:name="Transform Message" doc:id="3d7acb57-406e-42b2-887c-eb1d995256a6" >

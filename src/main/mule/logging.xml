@@ -16,7 +16,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 				<ee:set-variable variableName="logOutput" ><![CDATA[%dw 2.0
 output application/json
 ---
-vars.initialRequest ++ (vars.logMessage default {})]]></ee:set-variable>
+(vars.initialRequest default {}) ++ (vars.logMessage default {})]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="5162da9e-df6b-4511-8937-32d6933beb19" message="#[vars.logOutput]"/>

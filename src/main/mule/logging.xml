@@ -43,7 +43,7 @@ vars.initialRequest ++ { processingStage: "COMPLETED" }]]></ee:set-variable>
 output application/json
 var failingComp = error.failingComponent default "Unknown"
 ---
-vars.initialRequest ++ {
+vars.initialRequest default {} ++ {
     errorType: (error.errorType.namespace default "UNKNOWN") ++ ":" ++ (error.errorType.identifier default "UNKNOWN"),       
     errorMessage: error.description,
     flow: (failingComp splitBy "/")[0] default "Unknown",                           

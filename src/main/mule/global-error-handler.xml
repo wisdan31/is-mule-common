@@ -36,8 +36,10 @@ payload]]></ee:set-payload>
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 import modules::ErrorUtils
+
+var hasErrorPayload = (error.errorMessage != null) and (typeOf(error.errorMessage.payload) == Object)
 ---
-if (error.errorMessage.payload != null)
+if (hasErrorPayload)
     ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
 else
     ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>

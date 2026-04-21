@@ -37,10 +37,12 @@ payload]]></ee:set-payload>
 output application/json
 import modules::ErrorUtils
 
-var hasErrorPayload = (error.errorMessage != null) and (typeOf(error.errorMessage.payload) == Object)
+var isExternalHttpFailure = error.errorType.namespace == "HTTP"
+var upstreamPayload = error.errorMessage.payload default null
+var hasJsonBody = isExternalHttpFailure and (upstreamPayload is Object)
 ---
-if (hasErrorPayload)
-    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
+if (hasJsonBody)
+    ErrorUtils::getStructureFromPayload(upstreamPayload, vars.httpStatus default 500)
 else
     ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
 			</ee:message>
@@ -83,4 +85,7 @@ else
 			<flow-ref doc:name="logError" doc:id="7f54c55b-2c7a-4cb4-b861-0084ab0dec28" name="logError" />
 		</on-error-propagate>
 	</error-handler>
+	<sub-flow name="declareErrors" doc:id="d2242cc9-4b9e-4a37-9b39-23e411c3d20b" >
+		<raise-error doc:name="APP:NOT_FOUND" doc:id="483b44e5-220d-4eae-b51b-6332e9abcada" type="APP:NOT_FOUND"/>
+	</sub-flow>
 </mule>

@@ -36,9 +36,13 @@ payload]]></ee:set-payload>
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 import modules::ErrorUtils
+
+var isExternalHttpFailure = error.errorType.namespace == "HTTP"
+var upstreamPayload = error.errorMessage.payload default null
+var hasJsonBody = isExternalHttpFailure and (upstreamPayload is Object)
 ---
-if (error.errorMessage.payload != null)
-    ErrorUtils::getStructureFromPayload(error.errorMessage.payload, vars.httpStatus)
+if (hasJsonBody)
+    ErrorUtils::getStructureFromPayload(upstreamPayload, vars.httpStatus default 500)
 else
     ErrorUtils::getErrorStructure(error, null)]]></ee:set-payload>
 			</ee:message>
@@ -50,7 +54,7 @@ else
 			<flow-ref doc:name="createErrorSubFlow" doc:id="6d5587ec-6781-4d3e-8c11-7783f6add91c" name="createErrorSubFlow"/>
 			<flow-ref doc:name="logError" doc:id="312c9084-cee6-4cf4-a5d5-e4a9b70b8d90" name="logError"/>
 		</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="36cd5e0a-29f9-40ac-9fac-86f1b8357b36" type="APIKIT:NOT_FOUND">
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="36cd5e0a-29f9-40ac-9fac-86f1b8357b36" type="APIKIT:NOT_FOUND, APP:NOT_FOUND">
 			<set-variable value="404" doc:name="httpStatus" doc:id="6180ce90-1993-4898-b0ca-d89f8297a502" variableName="httpStatus" />
 			<flow-ref doc:name="createErrorSubFlow" doc:id="16f1792a-2089-466e-8fe2-8e080a9d8d25" name="createErrorSubFlow" />
 			<flow-ref doc:name="logError" doc:id="d8da1e8a-4003-403a-9684-5b8392fba494" name="logError" />
@@ -81,4 +85,7 @@ else
 			<flow-ref doc:name="logError" doc:id="7f54c55b-2c7a-4cb4-b861-0084ab0dec28" name="logError" />
 		</on-error-propagate>
 	</error-handler>
+	<sub-flow name="declareErrors" doc:id="d2242cc9-4b9e-4a37-9b39-23e411c3d20b" >
+		<raise-error doc:name="APP:NOT_FOUND" doc:id="483b44e5-220d-4eae-b51b-6332e9abcada" type="APP:NOT_FOUND"/>
+	</sub-flow>
 </mule>
